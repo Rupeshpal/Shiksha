@@ -1,0 +1,32 @@
+name: Build and Deploy React App
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Step 2: Install dependencies and build the React app
+      - name: Run React Build Script
+        run: |
+          yarn install
+          yarn build
+        env:
+          CI: false
+
+      # Step 3: Deploy the build folder via FTP
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@3.1.1
+        with:
+          ftp-server: ftp.aaditya.edu.np
+          ftp-username: shiksha@shiksha.aaditya.edu.np
+          ftp-password: Rupesh#@121
+          local-dir: build/
