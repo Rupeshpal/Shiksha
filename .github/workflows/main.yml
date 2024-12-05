@@ -3,18 +3,16 @@ name: Build and Deploy React App
 on:
   push:
     branches:
-      - main  
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      # Step 2: Install dependencies and build the React app
       - name: Run React Build Script
         run: |
           yarn install
@@ -22,11 +20,19 @@ jobs:
         env:
           CI: false
 
-      # Step 3: Deploy the build folder via FTP
+      - name: List Files in Build Directory
+        run: ls -la build/
+
+      - name: Initialize Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@3.1.1
         with:
-          ftp-server: ftp.aaditya.edu.np
-          ftp-username: shiksha@shiksha.aaditya.edu.np
-          ftp-password: Rupesh#@121
+          ftp-server: ${{ secrets.FTP_SERVER }}
+          ftp-username: ${{ secrets.FTP_USERNAME }}
+          ftp-password: ${{ secrets.FTP_PASSWORD }}
           local-dir: build/
+          git-ftp-args: "--verbose"
